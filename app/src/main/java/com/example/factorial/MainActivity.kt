@@ -8,34 +8,45 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.example.factorial.databinding.ActivityMainBinding
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+    private val viewModel by lazy {
+        ViewModelProvider(this)[ViewModelActivity::class.java]
+    }
+    private val binding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val inputText = findViewById<EditText>(R.id.editTextNumber)
-        val calculateFactorialButton = findViewById<Button>(R.id.CalculateFactorialButton)
-        val textView = findViewById<TextView>(R.id.textView)
-        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
-
-        calculateFactorialButton.setOnClickListener {
-            if (inputText.text.isNullOrBlank()){
-                Toast.makeText(this,"Input number", Toast.LENGTH_SHORT).show()
-            }else{
-                lifecycleScope.launch {
-                    progressBar.visibility = View.VISIBLE
-                    delay(3000)
-                    textView.text = inputText.text
-                    progressBar.visibility = View.GONE
-                }
+        setContentView(binding.root)
+        observeViewModel()
+        binding.CalculateFactorialButton.setOnClickListener {
+            viewModel.calculate(binding.editTextNumber.text.toString())
             }
 
 
         }
+    private fun observeViewModel(){
+        viewModel.progressBar.observe(this){
+            if (it){
+                binding.progressBar.visibility = View.VISIBLE
+            }else{
+                binding.progressBar.visibility = View.GONE
+            }
+        }
+        viewModel.error.observe(this){
+            if (it){
+                Toast.makeText(this,"Input number", Toast.LENGTH_SHORT).show()
+            }
+        }
+        viewModel.factorial.observe(this){
+            binding.textView.text = it
+        }
     }
-}
+    }
