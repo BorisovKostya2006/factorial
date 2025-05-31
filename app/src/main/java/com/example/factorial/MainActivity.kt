@@ -34,15 +34,12 @@ class MainActivity : AppCompatActivity() {
         }
     private fun observeViewModel(){
         viewModel.state.observe(this){
-            if (it.isProgressBar){
-                binding.progressBar.visibility = View.VISIBLE
-            }else{
-                binding.progressBar.visibility = View.GONE
+            binding.progressBar.visibility = View.GONE
+            when(it){
+                is isError -> Toast.makeText(this,"Input number", Toast.LENGTH_SHORT).show()
+                is isFactorial -> binding.textView.text = it.text
+                is isProgressBar -> binding.progressBar.visibility = View.VISIBLE
             }
-            if (it.isError){
-                Toast.makeText(this,"Input number", Toast.LENGTH_SHORT).show()
-            }
-            binding.textView.text = it.isFactorial
         }
     }
     }

@@ -17,15 +17,15 @@ class ViewModelActivity : ViewModel() {
         get() = _state
     fun calculate(inputText: String) {
         if (inputText.isNullOrBlank()){
-            _state.value = State(isError = true)
+            _state.value = isError()
             return
                     }
         else{
             val number = inputText.toLong()
             viewModelScope.launch {
-                _state.value = State(isProgressBar = true)
+                _state.value = isProgressBar()
                 delay(3000)
-                _state.value = State(isProgressBar = false,isFactorial = number.toString())
+                _state.value = isFactorial(number.toString())
             }
             }
 
